@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lịch Tập Xendi</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
+    }
+
+    body {
+      background: url('background.png') no-repeat center center;
+      background-size: contain;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      position: relative;
+      width: 100vw; height: 100vh;
+      max-width: 1920px; max-height: 1080px;
+    }
+
+    .label {
+      position: absolute;
+      width: 100px; height: 100px;
+      font-size: 2vw;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 4px black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .box1 { top: 47%; left: 44%; }
+    .box2 { top: 47%; left: 54.5%; }
+    .box3 { top: 47%; left: 65%; }
+    .box4 { top: 47%; left: 75.5%; }
+    .box5 { top: 47%; left: 86%; }
+
+    button {
+      position: fixed;
+      bottom: 5%;
+      padding: 1vw 2vw;
+      font-size: 1.5vw;
+      background: orange;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    #shuffleButton {
+      left: 5%;
+    }
+
+    #shuffleButton:hover {
+      background: darkorange;
+    }
+
+    #saveButton {
+      left: 20%;
+      background: teal;
+    }
+
+    #saveButton:hover {
+      background: darkcyan;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="captureArea">
+    <div class="label box1"></div>
+    <div class="label box2"></div>
+    <div class="label box3"></div>
+    <div class="label box4"></div>
+    <div class="label box5"></div>
+  </div>
+
+  <button id="shuffleButton" onclick="shuffleLabels()">Xáo trộn</button>
+  <button id="saveButton" onclick="saveImage()">Lưu ảnh</button>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    const words = ["Thân", "tay", "chân", "đầu", "miệng"];
+    const boxes = document.querySelectorAll('.label');
+
+    function shuffle(array) {
+      let newArray = array.slice();
+      for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    }
+
+    function shuffleLabels() {
+      const shuffled = shuffle(words);
+      boxes.forEach((box, i) => {
+        box.textContent = shuffled[i];
+      });
+    }
+
+    async function saveImage() {
+      const shuffleBtn = document.getElementById('shuffleButton');
+      const saveBtn = document.getElementById('saveButton');
+
+      // Ẩn 2 nút
+      shuffleBtn.style.display = 'none';
+      saveBtn.style.display = 'none';
+
+      try {
+        // Chụp toàn bộ body (cả background)
+        const canvas = await html2canvas(document.body, {
+          backgroundColor: null,
+          scale: window.devicePixelRatio,
+          scrollX: -window.scrollX,
+          scrollY: -window.scrollY,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+
+        // Tạo link tải ảnh
+        canvas.toBlob(blob => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'lich_tap_xendi.png';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+
+          // Hiện lại 2 nút
+          shuffleBtn.style.display = 'block';
+          saveBtn.style.display = 'block';
+        }, 'image/png');
+      } catch (e) {
+        console.error(e);
+        shuffleBtn.style.display = 'block';
+        saveBtn.style.display = 'block';
+      }
+    }
+
+    window.onload = shuffleLabels;
+  </script>
+</body>
+</html>
