@@ -2,14 +2,10 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Lịch Tập Xendi</title>
   <style>
     html, body {
       margin: 0; padding: 0; height: 100%; overflow: hidden;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-user-select: none;
-      user-select: none;
     }
 
     body {
@@ -18,20 +14,18 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
     }
 
     .container {
       position: relative;
       width: 100vw; height: 100vh;
-      max-width: 600px; /* giới hạn max width cho mobile */
-      max-height: 100vh;
+      max-width: 1920px; max-height: 1080px;
     }
 
     .label {
       position: absolute;
-      width: 15vw; height: 15vw;  /* thay đổi từ 100px sang % màn hình */
-      font-size: 5vw;            /* font to vừa đủ trên mobile */
+      width: 100px; height: 100px;
+      font-size: 2vw;
       font-weight: bold;
       color: white;
       text-shadow: 2px 2px 4px black;
@@ -39,8 +33,6 @@
       justify-content: center;
       align-items: center;
       pointer-events: none;
-      user-select: none;
-      border-radius: 10px;
     }
 
     .box1 { top: 47%; left: 44%; }
@@ -52,31 +44,29 @@
     button {
       position: fixed;
       bottom: 5%;
-      padding: 3vw 5vw;
-      font-size: 4vw;
+      padding: 1vw 2vw;
+      font-size: 1.5vw;
       background: orange;
       border: none;
       border-radius: 10px;
       color: white;
       cursor: pointer;
       z-index: 1000;
-      user-select: none;
-      touch-action: manipulation;
-      transition: background-color 0.2s ease;
     }
 
     #shuffleButton {
       left: 5%;
     }
+
     #shuffleButton:hover {
       background: darkorange;
     }
 
     #saveButton {
-      left: 50%;
-      transform: translateX(-50%);
+      left: 20%;
       background: teal;
     }
+
     #saveButton:hover {
       background: darkcyan;
     }
@@ -120,10 +110,12 @@
       const shuffleBtn = document.getElementById('shuffleButton');
       const saveBtn = document.getElementById('saveButton');
 
+      // Ẩn 2 nút
       shuffleBtn.style.display = 'none';
       saveBtn.style.display = 'none';
 
       try {
+        // Chụp toàn bộ body (cả background)
         const canvas = await html2canvas(document.body, {
           backgroundColor: null,
           scale: window.devicePixelRatio,
@@ -133,6 +125,7 @@
           height: window.innerHeight,
         });
 
+        // Tạo link tải ảnh
         canvas.toBlob(blob => {
           if (!blob) return;
           const url = URL.createObjectURL(blob);
@@ -144,6 +137,7 @@
           document.body.removeChild(link);
           URL.revokeObjectURL(url);
 
+          // Hiện lại 2 nút
           shuffleBtn.style.display = 'block';
           saveBtn.style.display = 'block';
         }, 'image/png');
